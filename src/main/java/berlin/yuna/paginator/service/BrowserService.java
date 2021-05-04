@@ -126,13 +126,13 @@ public class BrowserService {
 
     private synchronized void start() {
         System.setProperty("webdriver.chrome.whitelistedIps", "");
+        System.setProperty("webdriver.chrome.silentOutput", "true");
         WebDriverManager.chromedriver().setup();
         atomicDriver.set(new ChromeDriver(new ChromeOptions()
                 .setHeadless(true)
                 .addArguments("--no-sandbox")
                 .addArguments("--disable-extensions")
                 .addArguments("--disable-dev-shm-usage")
-
         ));
     }
 
