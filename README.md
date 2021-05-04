@@ -1,6 +1,6 @@
 # Paginator
 
-[Paginator](https://github.com/nats-io/paginator) to get webpages with JS support
+Paginator to get html documents with JS support
 
 [![Build][build_shield]][build_link]
 [![Maintainable][maintainable_shield]][maintainable_link]
