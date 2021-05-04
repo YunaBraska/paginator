@@ -1,0 +1,5 @@
+server:
+  port: ${SERVER_PORT:8081}
+spring:
+  main:
+    banner-mode: "off"

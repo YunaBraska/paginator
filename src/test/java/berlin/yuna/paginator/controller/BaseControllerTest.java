@@ -34,7 +34,7 @@ class BaseControllerTest {
 
     public void callSetPage(final String url, final String content) throws JsonProcessingException {
         restClient()
-                .body(mapper.writeValueAsString(new BrowserController.SavePageRequest().setUrl(url).setContent(content)))
+                .body(mapper.writeValueAsString(new BrowserController.PostPageRequest().setUrl(url).setContent(content)))
                 .post("/pages").then()
                 .assertThat().statusCode(OK.value());
     }

@@ -16,13 +16,13 @@ public class BrowserController {
 
     private final BrowserService browser;
 
-    public BrowserController(BrowserService browser) {
+    public BrowserController(final BrowserService browser) {
         this.browser = browser;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public String getPage(@RequestBody final String url) {
-        return browser.getPage(url);
+    public String getPage(@RequestBody final GetPageRequest request) {
+        return browser.getPage(request.getUrl());
     }
 
     @GetMapping(path = "statistics", produces = APPLICATION_JSON_VALUE)
@@ -31,11 +31,24 @@ public class BrowserController {
     }
 
     @PostMapping(produces = APPLICATION_JSON_VALUE)
-    public String savePage(@RequestBody final SavePageRequest request) {
+    public String savePage(@RequestBody final PostPageRequest request) {
         return browser.addToCache(request.getUrl(), request.getContent());
     }
 
-    public static class SavePageRequest {
+    public static class GetPageRequest {
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public GetPageRequest setUrl(final String url) {
+            this.url = url;
+            return this;
+        }
+    }
+
+    public static class PostPageRequest {
         private String url;
         private String content;
 
@@ -43,7 +56,7 @@ public class BrowserController {
             return url;
         }
 
-        public SavePageRequest setUrl(final String url) {
+        public PostPageRequest setUrl(final String url) {
             this.url = url;
             return this;
         }
@@ -52,7 +65,7 @@ public class BrowserController {
             return content;
         }
 
-        public SavePageRequest setContent(final String content) {
+        public PostPageRequest setContent(final String content) {
             this.content = content;
             return this;
         }
