@@ -32,6 +32,13 @@ class BaseControllerTest {
                 .asString();
     }
 
+    public void callSetPage(final String url, final String content) throws JsonProcessingException {
+        restClient()
+                .body(mapper.writeValueAsString(new BrowserController.SavePageRequest().setUrl(url).setContent(content)))
+                .post("/pages").then()
+                .assertThat().statusCode(OK.value());
+    }
+
     public CacheStatistic callGetStatistic() throws JsonProcessingException {
         return mapper.readValue(restClient()
                 .get("/pages/statistics")

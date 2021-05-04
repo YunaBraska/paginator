@@ -17,10 +17,10 @@ class BrowserControllerInvalidUrlTest extends BaseControllerTest {
     @Test
     @DisplayName("Manual page cache test")
     void setPageTest() throws JsonProcessingException {
-        assertThat(callGetStatistic().getSize(), is(0));
+        assertThat(callGetStatistic().getSize(), is(equalTo(0L)));
         final String result = callGetPage("invalidUrl");
         assertThat(result, is(notNullValue()));
         assertThat(result, is(equalTo("")));
-        assertThat(callGetStatistic().getSize(), is(0));
+        assertThat(callGetStatistic().getSize(), is(equalTo(0L)));
     }
 }

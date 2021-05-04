@@ -43,7 +43,7 @@ public class BrowserController {
             return url;
         }
 
-        public SavePageRequest setUrl(String url) {
+        public SavePageRequest setUrl(final String url) {
             this.url = url;
             return this;
         }
@@ -52,7 +52,7 @@ public class BrowserController {
             return content;
         }
 
-        public SavePageRequest setContent(String content) {
+        public SavePageRequest setContent(final String content) {
             this.content = content;
             return this;
         }

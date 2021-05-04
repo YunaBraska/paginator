@@ -1,8 +1,6 @@
 package berlin.yuna.paginator.service;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -11,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,6 @@ import static org.springframework.util.StringUtils.hasText;
 @Service
 public class BrowserService {
 
-    private static final Log log = LogFactory.getLog(BrowserService.class);
     private final AtomicReference<ChromeDriver> atomicDriver = new AtomicReference<>();
     private final Map<String, String> cache = new ConcurrentHashMap<>();
     private final Map<Long, String> cacheTimes = new ConcurrentHashMap<>();
@@ -61,7 +60,7 @@ public class BrowserService {
             Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::quit);
             WebDriverManager.chromedriver().clearResolutionCache();
         } catch (Exception e) {
-            log.warn("Browser quit error", e);
+            LOG.warn("Browser quit error", e);
         } finally {
             atomicDriver.set(null);
         }
@@ -71,7 +70,8 @@ public class BrowserService {
         if (hasText(url) && hasText(content)) {
             cache.put(url, content);
             cacheTimes.put(System.currentTimeMillis(), url);
-            log.warn("Received empty page from url [" + url + "]");
+        } else {
+            LOG.warn("Received empty page from url [" + url + "]");
         }
         return content;
     }
@@ -81,7 +81,7 @@ public class BrowserService {
     }
 
     public CacheStatistic getStatistic() {
-        return new CacheStatistic().setSize(cache.size());
+        return new CacheStatistic().setSize((long) cache.size());
     }
 
     private Optional<String> getCachedPage(final String url) {
@@ -89,17 +89,19 @@ public class BrowserService {
     }
 
     private synchronized String cacheNewPage(final String url) {
-        try {
-            if (atomicDriver.get() == null) {
-                start();
+        if(toUrl(url) != null) {
+            try {
+                if (atomicDriver.get() == null) {
+                    start();
+                }
+                LOG.debug("Page call [" + url + "]");
+                final ChromeDriver driver = this.atomicDriver.get();
+                driver.get(url);
+                return addToCache(url, driver.getPageSource());
+            } catch (Exception e) {
+                LOG.warn(format("Could not render [%s]", url), e);
+                clearBrowserCache();
             }
-            log.debug("Page call [" + url + "]");
-            final ChromeDriver driver = this.atomicDriver.get();
-            driver.get(url);
-            return addToCache(url, driver.getPageSource());
-        } catch (Exception e) {
-            log.warn(format("Could not render [%s]", url), e);
-            clearBrowserCache();
         }
         return "";
     }
@@ -135,15 +137,15 @@ public class BrowserService {
     }
 
     public static class CacheStatistic {
-        private Integer size;
+        private Long size;
         private Long maxLifeTime = CACHE_LIVE_TIME_MS;
         private Long sizeLimit = CACHE_ITEM_LIMIT;
 
-        public Integer getSize() {
+        public Long getSize() {
             return size;
         }
 
-        public CacheStatistic setSize(Integer size) {
+        public CacheStatistic setSize(final Long size) {
             this.size = size;
             return this;
         }
@@ -152,7 +154,7 @@ public class BrowserService {
             return maxLifeTime;
         }
 
-        public CacheStatistic setMaxLifeTime(Long maxLifeTime) {
+        public CacheStatistic setMaxLifeTime(final Long maxLifeTime) {
             this.maxLifeTime = maxLifeTime;
             return this;
         }
@@ -161,9 +163,20 @@ public class BrowserService {
             return sizeLimit;
         }
 
-        public CacheStatistic setSizeLimit(Long sizeLimit) {
+        public CacheStatistic setSizeLimit(final Long sizeLimit) {
             this.sizeLimit = sizeLimit;
             return this;
+        }
+    }
+
+    private URL toUrl(final String url) {
+        if (!hasText(url)) {
+            return null;
+        }
+        try {
+            return new URL(url);
+        } catch (MalformedURLException ignored) {
+            return null;
         }
     }
 
