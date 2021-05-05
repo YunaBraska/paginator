@@ -25,16 +25,16 @@ class BaseControllerTest {
 
     public String callGetPage(final String url) {
         return restClient()
-                .body(url)
+                .body(asString(new BrowserController.PostPageRequest().setUrl(url)))
                 .get("/pages")
                 .then().assertThat().statusCode(OK.value())
                 .extract()
                 .asString();
     }
 
-    public void callSetPage(final String url, final String content) throws JsonProcessingException {
+    public void callSetPage(final String url, final String content) {
         restClient()
-                .body(mapper.writeValueAsString(new BrowserController.PostPageRequest().setUrl(url).setContent(content)))
+                .body(asString(new BrowserController.PostPageRequest().setUrl(url).setContent(content)))
                 .post("/pages").then()
                 .assertThat().statusCode(OK.value());
     }
@@ -51,5 +51,13 @@ class BaseControllerTest {
         return given().port(port).log().all()
                 .contentType(JSON)
                 .filter(new ResponseLoggingFilter());
+    }
+
+    private String asString(final Object object){
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
