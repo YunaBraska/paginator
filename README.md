@@ -41,17 +41,21 @@ Paginator to get html documents with JS support
 [gitter_link]: https://gitter.im/paginator/Lobby
 
 ### Requirements
+
 * min java 11
 * chrome installed on the machine
 
 ### Endpoints
-| METHOD | URL    | REQUEST BODY                     | RETURN BODY                            | Description            | 
-| -------|-------------------|-----------------------|----------------------------------------|------------------------|
-| GET    | /pages            | String url            |                                        | Get html page from url |
-| GET    | /pages/statistics |                       | Response(size, maxLifeTime, sizeLimit) | Get cache statistics   |
-| POST   | /pages            | Request(url, content) |                                        | Manual add html page to cache |
+
+| METHOD | URL    | REQUEST BODY                           | RETURN BODY                            | Description                   | 
+| -------|-------------------|-----------------------------|----------------------------------------|-------------------------------|
+| GET    | /pages            | String url                  |                                        | Get html page from url        |
+| GET    | /pages/elements   | url, Map<queryId, cssQuery> | Map<queryId, List<Elements>>           | Get specific html elements    |
+| GET    | /pages/statistics |                             | size, maxLifeTime, sizeLimit           | Get cache statistics          |
+| POST   | /pages            | url, content                |                                        | Manual add html page to cache |
 
 ### TODO
+
 * Async page call implementation \[remove synchronised\]
 * Endpoint to clear cache
 * configurable cache limits

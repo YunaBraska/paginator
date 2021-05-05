@@ -1,6 +1,10 @@
 package berlin.yuna.paginator.service;
 
+import berlin.yuna.paginator.model.CacheStatistic;
+import berlin.yuna.paginator.model.ElementsResponse;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,6 +81,20 @@ public class BrowserService {
         return content;
     }
 
+    public Map<String, List<ElementsResponse>> getHtmlElements(final String url, final Map<String, String> cssQueryMap) {
+        final String html = getPage(url);
+        final Map<String, List<ElementsResponse>> result = new HashMap<>();
+        if (hasText(html)) {
+            final Document document = Jsoup.parse(html);
+            cssQueryMap.forEach((name, cssQuery) -> {
+                if (hasText(name) && hasText(cssQuery)) {
+                    result.put(name, ElementsResponse.from(document.select(cssQuery)));
+                }
+            });
+        }
+        return result;
+    }
+
     public String getPage(final String url) {
         return getCachedPage(url).orElseGet(() -> cacheNewPage(url));
     }
@@ -89,7 +108,7 @@ public class BrowserService {
     }
 
     private synchronized String cacheNewPage(final String url) {
-        if(toUrl(url) != null) {
+        if (toUrl(url) != null) {
             try {
                 if (atomicDriver.get() == null) {
                     start();
@@ -134,39 +153,6 @@ public class BrowserService {
                 .addArguments("--disable-extensions")
                 .addArguments("--disable-dev-shm-usage")
         ));
-    }
-
-    public static class CacheStatistic {
-        private Long size;
-        private Long maxLifeTime = CACHE_LIVE_TIME_MS;
-        private Long sizeLimit = CACHE_ITEM_LIMIT;
-
-        public Long getSize() {
-            return size;
-        }
-
-        public CacheStatistic setSize(final Long size) {
-            this.size = size;
-            return this;
-        }
-
-        public Long getMaxLifeTime() {
-            return maxLifeTime;
-        }
-
-        public CacheStatistic setMaxLifeTime(final Long maxLifeTime) {
-            this.maxLifeTime = maxLifeTime;
-            return this;
-        }
-
-        public Long getSizeLimit() {
-            return sizeLimit;
-        }
-
-        public CacheStatistic setSizeLimit(final Long sizeLimit) {
-            this.sizeLimit = sizeLimit;
-            return this;
-        }
     }
 
     private URL toUrl(final String url) {
