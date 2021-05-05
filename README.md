@@ -47,8 +47,8 @@ Paginator to get html documents with JS support
 
 ### Endpoints
 
-| METHOD | URL    | REQUEST BODY                            | RETURN BODY                    | Description                   | 
-| -------|-------------------|------------------------------|---------------------------------|-------------------------------|
+| METHOD | URL               | REQUEST BODY                 | RETURN BODY                    | Description                   | 
+| -------|-------------------|------------------------------|--------------------------------|-------------------------------|
 | GET    | /pages            | String url                   |                                | Get html page from url        |
 | GET    | /pages/elements   | url, Map\<queryId, cssQuery> | Map\<queryId, List\<Elements>> | Get specific html elements    |
 | GET    | /pages/statistics |                              | size, maxLifeTime, sizeLimit   | Get cache statistics          |
