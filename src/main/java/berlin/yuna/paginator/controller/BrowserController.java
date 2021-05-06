@@ -6,7 +6,6 @@ import berlin.yuna.paginator.model.ElementsResponse;
 import berlin.yuna.paginator.model.GetPageRequest;
 import berlin.yuna.paginator.model.SavePageRequest;
 import berlin.yuna.paginator.service.BrowserService;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController()
 @RequestMapping("/pages")
@@ -27,17 +28,17 @@ public class BrowserController {
         this.browser = browser;
     }
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = {GET, PUT}, produces = APPLICATION_JSON_VALUE)
     public String getPage(@RequestBody final GetPageRequest request) {
         return browser.getPage(request.getUrl());
     }
 
-    @GetMapping(path = "elements", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = {GET, PUT}, path = "elements", produces = APPLICATION_JSON_VALUE)
     public Map<String, List<ElementsResponse>> getElements(@RequestBody final ElementsRequest request) {
         return browser.getHtmlElements(request.getUrl(), request.cssQueries());
     }
 
-    @GetMapping(path = "statistics", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = {GET, PUT}, path = "statistics", produces = APPLICATION_JSON_VALUE)
     public CacheStatistic getStatistics() {
         return browser.getStatistic();
     }
