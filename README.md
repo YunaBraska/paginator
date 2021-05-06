@@ -45,6 +45,20 @@ Paginator to get html documents with JS support
 * min java 11
 * chrome installed on the machine
 
+### Docker image
+* [https://hub.docker.com/repository/docker/yuna88/paginator](https://hub.docker.com/repository/docker/yuna88/paginator)
+
+# Configurations
+
+* Please request any issues and wishes to
+  GitHub [https://github.com/YunaBraska/paginator](https://github.com/YunaBraska/paginator)
+
+| ENV VARIABLE | DEFAULT    | DESCRIPTION                |
+|--------------|------------|----------------------------|
+| SERVER_PORT  | 8089       | Server port                |
+| N/A          | 10000      | HTML pages cache limit     |
+| N/A          | 10800000ms | HTML pages cache life time |
+
 ### Endpoints
 
 | METHOD  | URL               | REQUEST BODY                 | RETURN BODY                    | Description                   | 
@@ -54,11 +68,74 @@ Paginator to get html documents with JS support
 | GET/PUT | /pages/statistics |                              | size, maxLifeTime, sizeLimit   | Get cache statistics          |
 | GET/PUT | /pages            | url, content                 |                                | Manual add html page to cache |
 
+### Examples
+
+#### Get elements from HTML page
+
+* Request: `GET http://localhost:8089/pages/elements`
+* Body:
+
+```json
+{
+  "url": "parse.example.com",
+  "css_queries": {
+    "form_text": "form p"
+  }
+}
+```
+
+* Response
+
+```json
+{
+  "form_text": [
+    {
+      "tag": "P",
+      "text": "Some example text here.",
+      "selector": "html > body > div > form > p:nth-child(1)",
+      "attributes": {
+      },
+      "children": [
+      ]
+    }
+  ]
+}
+```
+
+#### Cache custom html pages
+
+* Request: `POST http://localhost:8089/pages`
+* Body:
+
+```json
+{
+  "url": "my.own.example.com",
+  "content": "<!doctype html><html><head><title>Example Domain</title></head><body><div><h1>Example page</h1></div></body></html>"
+}
+```
+
+* Request: `POST http://localhost:8089/pages`
+* Body:
+
+```json
+{
+  "url": "my.own.example.com",
+  "content": "<!doctype html><html><head><title>Example Domain</title></head><body><div><h1>Example page</h1></div></body></html>"
+}
+```
+
+### Docker build image example
+* Create jar file: `mvn clean -Dmaven.test.skip=true package`
+* Build local image `docker build -t paginator .`
+* Docker image tag latest for repo: `docker tag "$(whoami)/paginator" SOME_REPO_PATH/paginator:latest;`
+* Docker image push to repo:  `docker push SOME_REPO_PATH/paginator:latest`
+
 ### TODO
 
 * Async page call implementation \[remove synchronised\]
 * Endpoint to clear cache
 * configurable cache limits
+* Automate docker image build
 
 ```
     ////((((((((((((((((((((((((((((((* **         
