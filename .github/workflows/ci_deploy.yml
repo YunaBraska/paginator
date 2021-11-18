@@ -1,12 +1,14 @@
 # Ansible managed
-name: JAVA_CI
+name: JAVA_CI_DEPLOY
 on:
   workflow_dispatch:
     branches: ['master']
-  push:
-    branches: ['master']
-  pull_request:
-    branches: ['master']
+  schedule:
+    - cron: "0 10 * * *"
+
+env:
+  SPRING_PROFILE: ci
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
   build:
@@ -38,3 +40,31 @@ jobs:
           wget -nc https://raw.githubusercontent.com/YunaBraska/YunaBraska/main/.github/scripts/increment_version.sh -P .github/scripts
           chmod +x .github/scripts/versions.sh .github/scripts/push_changes.sh .github/scripts/increment_version.sh
           .github/scripts/push_changes.sh "https://x-access-token:${{ secrets.CI_TOKEN }}@github.com/${{ github.repository }}"
+      - name: "Check if branch exists"
+        run: |
+          git fetch origin release:release &>/dev/null || true
+          if git rev-parse --verify "release" &>/dev/null; then echo "::set-env name=HAS_RELEASE_BRANCH::true"; fi
+      - name: Import GPG key
+        if: env.HAS_RELEASE_BRANCH == 'true'
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Set up Maven Central Repository
+        if: env.HAS_RELEASE_BRANCH == 'true'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - name: Publish package
+        if: env.HAS_RELEASE_BRANCH == 'true'
+        run: mvn -B clean deploy -P release -Dmaven.test.skip=true -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSH_USER }}
+          MAVEN_PASSWORD: ${{ secrets.OSSH_PASS }}
+      - name: "Remove release branch"
+        run: |
+          git push --delete origin release &>/dev/null || true
