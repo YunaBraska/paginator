@@ -33,7 +33,7 @@ public class BrowserService {
     private final AtomicReference<ChromeDriver> atomicDriver = new AtomicReference<>();
     private final Map<String, String> cache = new ConcurrentHashMap<>();
     private final Map<Long, String> cacheTimes = new ConcurrentHashMap<>();
-    private final Logger LOG = LoggerFactory.getLogger(BrowserService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserService.class);
 
     public BrowserService() {
         start();
@@ -113,7 +113,7 @@ public class BrowserService {
                 if (atomicDriver.get() == null) {
                     start();
                 }
-                LOG.debug("Page call [" + url + "]");
+                LOG.debug(format("Page call [%s]", url));
                 final ChromeDriver driver = this.atomicDriver.get();
                 driver.get(url);
                 return addToCache(url, driver.getPageSource());
@@ -125,7 +125,7 @@ public class BrowserService {
         return "";
     }
 
-    private void logDeletedItems(int[] deletedItems) {
+    private void logDeletedItems(final int[] deletedItems) {
         if ((deletedItems[0] + deletedItems[1]) != 0) {
             final String logMessage = format(
                     "Deleted items [%s], [%s] items CACHE_LIVE_TIME_MS [%s], [%s] items CACHE_ITEM_LIMIT [%s]",

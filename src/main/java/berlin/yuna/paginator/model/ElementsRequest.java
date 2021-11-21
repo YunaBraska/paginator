@@ -21,7 +21,7 @@ public class ElementsRequest {
         return cssQueries;
     }
 
-    public ElementsRequest setCssQueries(Map<String, String> cssQueries) {
+    public ElementsRequest setCssQueries(final Map<String, String> cssQueries) {
         this.cssQueries = cssQueries;
         return this;
     }
@@ -30,7 +30,7 @@ public class ElementsRequest {
         return url;
     }
 
-    public ElementsRequest setUrl(String url) {
+    public ElementsRequest setUrl(final String url) {
         this.url = url;
         return this;
     }

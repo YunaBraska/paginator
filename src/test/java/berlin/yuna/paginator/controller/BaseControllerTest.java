@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.with;
 import static io.restassured.http.ContentType.JSON;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -28,7 +29,7 @@ class BaseControllerTest {
     @LocalServerPort
     public int port;
 
-    public ObjectMapper mapper = new ObjectMapper();
+    public final ObjectMapper mapper = new ObjectMapper();
 
     public String callGetPage(final String url) {
         return restClient()
@@ -65,7 +66,7 @@ class BaseControllerTest {
     }
 
     public RequestSpecification restClient() {
-        return given().port(port).log().all()
+        return with().given().port(port).log().all()
                 .contentType(JSON)
                 .filter(new ResponseLoggingFilter());
     }

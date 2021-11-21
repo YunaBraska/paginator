@@ -45,7 +45,7 @@ public class ElementsResponse {
         return tag;
     }
 
-    public ElementsResponse setTag(String tag) {
+    public ElementsResponse setTag(final String tag) {
         this.tag = tag;
         return this;
     }
@@ -54,7 +54,7 @@ public class ElementsResponse {
         return text;
     }
 
-    public ElementsResponse setText(String text) {
+    public ElementsResponse setText(final String text) {
         this.text = text;
         return this;
     }
@@ -63,7 +63,7 @@ public class ElementsResponse {
         return attributes;
     }
 
-    public ElementsResponse setAttributes(Map<String, String> attributes) {
+    public ElementsResponse setAttributes(final Map<String, String> attributes) {
         this.attributes = attributes;
         return this;
     }
@@ -72,7 +72,7 @@ public class ElementsResponse {
         return children;
     }
 
-    public ElementsResponse setChildren(List<ElementsResponse> children) {
+    public ElementsResponse setChildren(final List<ElementsResponse> children) {
         this.children = children;
         return this;
     }
@@ -81,7 +81,7 @@ public class ElementsResponse {
         return selector;
     }
 
-    public ElementsResponse setSelector(String selector) {
+    public ElementsResponse setSelector(final String selector) {
         this.selector = selector;
         return this;
     }

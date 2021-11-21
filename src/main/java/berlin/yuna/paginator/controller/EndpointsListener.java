@@ -14,8 +14,8 @@ public class EndpointsListener implements ApplicationListener<ContextRefreshedEv
     private static final Log LOG = LogFactory.getLog(EndpointsListener.class);
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        ApplicationContext applicationContext = event.getApplicationContext();
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
+        final ApplicationContext applicationContext = event.getApplicationContext();
         applicationContext.getBean(RequestMappingHandlerMapping.class).getHandlerMethods()
                 .forEach((requestMappingInfo, handlerMethod) -> {
                     if (requestMappingInfo.getMethodsCondition().getMethods().size() != 0) {

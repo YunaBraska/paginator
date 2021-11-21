@@ -19,7 +19,7 @@ class BrowserControllerCacheLimitTest {
     @Test
     @DisplayName("cache overflow test")
     void setPageTest() {
-        BrowserService service = new BrowserService();
+        final BrowserService service = new BrowserService();
         for (int i = 0; i < (CACHE_ITEM_LIMIT + 10); i++) {
             service.addToCache(UUID.randomUUID().toString(), "cacheOverflowTest");
         }

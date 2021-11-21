@@ -13,7 +13,7 @@
 
     <groupId>oberlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.0</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
@@ -46,7 +46,12 @@
         <project.encoding>UTF-8</project.encoding>
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-        <!-- VERSIONS BUILD -->
+        <!-- PROD -->
+        <webdrivermanager.version>5.0.3</webdrivermanager.version>
+        <!-- TEST -->
+        <rest-assured.version>4.4.0</rest-assured.version>
+        <groovy.version>3.0.7</groovy.version>
+        <!-- BUILD -->
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
@@ -71,15 +76,15 @@
         </dependency>
         <!-- WEB PAGE PARSER -->
         <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>4.4.1</version>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -103,44 +108,26 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>4.2.0</version>
+            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured-all</artifactId>
-            <version>4.2.0</version>
+            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>paginator</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <imageName>${project.artifactId}</imageName>
-                    <finalName>paginator</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>build-info</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -185,7 +172,7 @@
                         **  Match zero or more directories
                         ?   Match a single character
                         -->
-                        <exclude>**/*/config/**/*</exclude>
+                        <!--                        <exclude>**/*/config/**/*</exclude>-->
                         <exclude>**/*/model/**/*</exclude>
                         <exclude>**/*/domain/**/*</exclude>
                         <exclude>**/*/persistence/**/*</exclude>

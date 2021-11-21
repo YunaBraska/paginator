@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +34,26 @@ class BrowserControllerManualCacheTest extends BaseControllerTest {
     @DisplayName("Find in document")
     void findInDocument() throws JsonProcessingException {
         callSetPage("parse.example.com", htmlExample);
-        Map<String, List<ElementsResponse>> result = callGetElements("parse.example.com", Map.of("form_text", "form p"));
+        final Map<String, List<ElementsResponse>> result = callGetElements("parse.example.com", mapOf("form_text", "form p"));
         assertThat(result, is(notNullValue()));
         assertThat(result.size(), is(equalTo(1)));
         assertThat(result.get("form_text"), is(notNullValue()));
         assertThat(result.get("form_text").size(), is(equalTo(2)));
+    }
+
+    public final Map<String, String> mapOf(final String... kv) {
+        final HashMap<String, String> result = new HashMap<>();
+        boolean isKey = true;
+        String key = null;
+        for (String property : kv) {
+            if (isKey) {
+                key = property;
+            } else {
+                result.put(key, property);
+            }
+            isKey = !isKey;
+        }
+        return result;
     }
 
     final static String htmlExample = "<!doctype html>\n" +
