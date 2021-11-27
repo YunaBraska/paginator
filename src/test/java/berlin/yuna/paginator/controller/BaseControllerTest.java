@@ -17,7 +17,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.with;
 import static io.restassured.http.ContentType.JSON;
 import static org.springframework.http.HttpStatus.OK;

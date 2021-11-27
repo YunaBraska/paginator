@@ -11,9 +11,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>oberlin.yuna</groupId>
+    <groupId>berlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
@@ -280,6 +280,7 @@
                                 <configuration>
                                     <nodeprecatedlist>true</nodeprecatedlist>
                                     <quiet>true</quiet>
+                                    <source>8</source>
                                     <!-- disable strict checking -->
                                     <doclint>none</doclint>
                                 </configuration>
