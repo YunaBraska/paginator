@@ -6,5 +6,5 @@ spring:
 logging:
   level:
     root: WARN
-    berlin.yuna: INFO
+    berlin.yuna: WARN
     org.apache.hc.client5.http.wire: WARN
