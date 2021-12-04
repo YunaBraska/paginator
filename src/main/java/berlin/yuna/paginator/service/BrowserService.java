@@ -113,7 +113,9 @@ public class BrowserService {
                 if (atomicDriver.get() == null) {
                     start();
                 }
-                LOG.debug(format("Page call [%s]", url));
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug(format("Page call [%s]", url));
+                }
                 final ChromeDriver driver = this.atomicDriver.get();
                 driver.get(url);
                 return addToCache(url, driver.getPageSource());
