@@ -19,12 +19,13 @@ class BrowserControllerCacheLimitTest {
     @Test
     @DisplayName("cache overflow test")
     void setPageTest() {
-        final BrowserService service = new BrowserService();
-        for (int i = 0; i < (CACHE_ITEM_LIMIT + 10); i++) {
-            service.addToCache(UUID.randomUUID().toString(), "cacheOverflowTest");
+        try (final BrowserService service = new BrowserService()) {
+            for (int i = 0; i < (CACHE_ITEM_LIMIT + 10); i++) {
+                service.addToCache(UUID.randomUUID().toString(), "cacheOverflowTest");
+            }
+            assertThat(service.getStatistic().getSize(), is(equalTo(CACHE_ITEM_LIMIT + 10)));
+            service.removeOutdated();
+            assertThat(service.getStatistic().getSize(), is(equalTo(CACHE_ITEM_LIMIT)));
         }
-        assertThat(service.getStatistic().getSize(), is(equalTo(CACHE_ITEM_LIMIT + 10)));
-        service.removeOutdated();
-        assertThat(service.getStatistic().getSize(), is(equalTo(CACHE_ITEM_LIMIT)));
     }
 }

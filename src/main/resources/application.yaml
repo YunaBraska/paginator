@@ -6,6 +6,4 @@ spring:
 logging:
   level:
     root: WARN
-    berlin.yuna: INFO
-    org.apache: WARN
-    logger.httpclient: WARN
+    org.springframework.web: INFO

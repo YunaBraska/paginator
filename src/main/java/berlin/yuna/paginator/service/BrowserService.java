@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.Closeable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ import static java.lang.String.format;
 import static org.springframework.util.StringUtils.hasText;
 
 @Service
-public class BrowserService {
+public class BrowserService implements Closeable {
 
     private final AtomicReference<ChromeDriver> atomicDriver = new AtomicReference<>();
     private final Map<String, String> cache = new ConcurrentHashMap<>();
@@ -60,15 +61,7 @@ public class BrowserService {
     }
 
     public synchronized void clearBrowserCache() {
-        try {
-            Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::close);
-            Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::quit);
-            WebDriverManager.chromedriver().clearResolutionCache();
-        } catch (Exception e) {
-            LOG.warn("Browser quit error", e);
-        } finally {
-            atomicDriver.set(null);
-        }
+        close();
     }
 
     public String addToCache(final String url, final String content) {
@@ -146,8 +139,6 @@ public class BrowserService {
     }
 
     private synchronized void start() {
-        System.setProperty("webdriver.chrome.whitelistedIps", "");
-        System.setProperty("webdriver.chrome.silentOutput", "true");
         WebDriverManager.chromedriver().setup();
         atomicDriver.set(new ChromeDriver(new ChromeOptions()
                 .setHeadless(true)
@@ -168,4 +159,16 @@ public class BrowserService {
         }
     }
 
+    @Override
+    public void close() {
+        try {
+            Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::close);
+            Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::quit);
+            WebDriverManager.chromedriver().clearResolutionCache();
+        } catch (Exception e) {
+            LOG.warn("Browser quit error", e);
+        } finally {
+            atomicDriver.set(null);
+        }
+    }
 }

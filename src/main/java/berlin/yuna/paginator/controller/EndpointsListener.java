@@ -18,8 +18,8 @@ public class EndpointsListener implements ApplicationListener<ContextRefreshedEv
         final ApplicationContext applicationContext = event.getApplicationContext();
         applicationContext.getBean(RequestMappingHandlerMapping.class).getHandlerMethods()
                 .forEach((requestMappingInfo, handlerMethod) -> {
-                    if (requestMappingInfo.getMethodsCondition().getMethods().size() != 0) {
-                        for(String pattern : requestMappingInfo.getPatternsCondition().getPatterns()){
+                    if (!requestMappingInfo.getMethodsCondition().getMethods().isEmpty()) {
+                        for(String pattern : requestMappingInfo.getPatternValues()){
                             LOG.info("Started endpoint: " + requestMappingInfo.getMethodsCondition().getMethods() + " " + pattern);
                         }
                     }
