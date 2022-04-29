@@ -51,6 +51,7 @@
         <!-- TEST -->
         <rest-assured.version>5.0.1</rest-assured.version>
         <jsoup.version>1.14.3</jsoup.version>
+        <selenium.version>4.1.4</selenium.version>
         <!-- BUILD -->
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
@@ -89,13 +90,13 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.version}</version>
             <scope>compile</scope>
         </dependency>
 
