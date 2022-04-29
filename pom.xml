@@ -13,7 +13,7 @@
 
     <groupId>berlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
@@ -47,10 +47,10 @@
         <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
         <!-- PROD -->
-        <webdrivermanager.version>5.0.3</webdrivermanager.version>
+        <webdrivermanager.version>5.1.1</webdrivermanager.version>
         <!-- TEST -->
-        <rest-assured.version>4.5.1</rest-assured.version>
-        <groovy.version>3.0.7</groovy.version>
+        <rest-assured.version>5.0.1</rest-assured.version>
+        <jsoup.version>1.14.3</jsoup.version>
         <!-- BUILD -->
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
@@ -75,6 +75,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
         <!-- WEB PAGE PARSER -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>

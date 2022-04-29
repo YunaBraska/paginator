@@ -42,7 +42,7 @@ Paginator to get html documents with JS support
 
 ### Requirements
 
-* min java 11
+* min java 8
 * chrome installed on the machine
 
 ### Docker image
