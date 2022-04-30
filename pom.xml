@@ -13,7 +13,7 @@
 
     <groupId>berlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
