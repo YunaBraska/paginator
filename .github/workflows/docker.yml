@@ -17,7 +17,7 @@ jobs:
         with:
           java-version: 8
           distribution: 'adopt'
-      - name: Maven compile and update dependencies
+      - name: Build jar file
         run: |
           ./mvnw -B -q package -Dmaven.test.skip=true
       - name: Log in to Docker Hub
