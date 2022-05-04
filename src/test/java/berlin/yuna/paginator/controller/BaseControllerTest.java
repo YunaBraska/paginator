@@ -41,7 +41,7 @@ class BaseControllerTest {
 
     public Map<String, List<ElementsResponse>> callGetElements(final String url, final Map<String, String> cssQuery) throws JsonProcessingException {
         return mapper.readValue(restClient()
-                .body(asString(new ElementsRequest().setUrl(url).setCssQueries(cssQuery)))
+                .body(asString(new ElementsRequest().setCssQueries(cssQuery).setUrl(url)))
                 .get("/pages/elements")
                 .then().assertThat().statusCode(OK.value())
                 .extract()
@@ -51,7 +51,7 @@ class BaseControllerTest {
 
     public void callSetPage(final String url, final String content) {
         restClient()
-                .body(asString(new SavePageRequest().setUrl(url).setContent(content)))
+                .body(asString(new SavePageRequest().setContent(content).setUrl(url)))
                 .post("/pages").then()
                 .assertThat().statusCode(OK.value());
     }

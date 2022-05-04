@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ElementsRequest {
+public class ElementsRequest extends BaseRequest {
 
-    @JsonProperty("url")
-    private String url;
     @JsonProperty("css_queries")
     private Map<String, String> cssQueries = new HashMap<>();
 
@@ -23,15 +21,6 @@ public class ElementsRequest {
 
     public ElementsRequest setCssQueries(final Map<String, String> cssQueries) {
         this.cssQueries = cssQueries;
-        return this;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public ElementsRequest setUrl(final String url) {
-        this.url = url;
         return this;
     }
 

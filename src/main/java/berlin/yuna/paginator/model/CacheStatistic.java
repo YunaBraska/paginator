@@ -3,14 +3,14 @@ package berlin.yuna.paginator.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static berlin.yuna.paginator.config.Constants.CACHE_ITEM_LIMIT;
-import static berlin.yuna.paginator.config.Constants.CACHE_LIVE_TIME_MS;
+import static berlin.yuna.paginator.config.Constants.DEFAULT_PAGE_CACHE_MS;
 
 public class CacheStatistic {
 
     @JsonProperty("size")
     private Long size;
-    @JsonProperty("max_life_time")
-    private Long maxLifeTime = CACHE_LIVE_TIME_MS;
+    @JsonProperty("page_cache_ms_default")
+    private Long maxLifeTime = DEFAULT_PAGE_CACHE_MS;
     @JsonProperty("size_limit")
     private Long sizeLimit = CACHE_ITEM_LIMIT;
 

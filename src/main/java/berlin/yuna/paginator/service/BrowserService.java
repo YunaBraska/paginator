@@ -1,6 +1,9 @@
 package berlin.yuna.paginator.service;
 
+import berlin.yuna.paginator.model.BaseRequest;
+import berlin.yuna.paginator.model.CacheItem;
 import berlin.yuna.paginator.model.CacheStatistic;
+import berlin.yuna.paginator.model.ElementsRequest;
 import berlin.yuna.paginator.model.ElementsResponse;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.jsoup.Jsoup;
@@ -16,16 +19,20 @@ import org.springframework.stereotype.Service;
 import java.io.Closeable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static berlin.yuna.paginator.config.Constants.CACHE_ITEM_LIMIT;
-import static berlin.yuna.paginator.config.Constants.CACHE_LIVE_TIME_MS;
+import static berlin.yuna.paginator.config.Constants.DEFAULT_PAGE_CACHE_MS;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.util.StringUtils.hasText;
 
 @Service
@@ -33,7 +40,7 @@ public class BrowserService implements Closeable {
 
     private final AtomicReference<ChromeDriver> atomicDriver = new AtomicReference<>();
     private final Map<String, String> cache = new ConcurrentHashMap<>();
-    private final Map<Long, String> cacheTimes = new ConcurrentHashMap<>();
+    private final List<CacheItem> cacheTimes = new CopyOnWriteArrayList<>(); //Better: ConcurrentLinkedQueue?
     private static final Logger LOG = LoggerFactory.getLogger(BrowserService.class);
 
     public BrowserService() {
@@ -42,44 +49,29 @@ public class BrowserService implements Closeable {
 
     @Scheduled(fixedRate = 10000)
     public void removeOutdated() {
-        final int[] deletedItems = new int[]{0, 0};
-        final long currentTimeMs = System.currentTimeMillis();
-        new HashMap<>(cacheTimes).forEach((cachedTimeMs, url) -> {
-            if (cachedTimeMs + CACHE_LIVE_TIME_MS < currentTimeMs) {
-                deletedItems[0] = deletedItems[0] + 1;
-                cache.remove(url);
-                cacheTimes.remove(cachedTimeMs);
-            }
-        });
-        while (cache.size() > CACHE_ITEM_LIMIT) {
-            deletedItems[1] = deletedItems[1] + 1;
-            final Map.Entry<Long, String> next = cacheTimes.entrySet().iterator().next();
-            cache.remove(next.getValue());
-            cacheTimes.remove(next.getKey());
-        }
-        logDeletedItems(deletedItems);
+        logDeletedItems(cleanUpOverTimed(), cleanUpOverflow()); //Order is important
     }
 
     public synchronized void clearBrowserCache() {
         close();
     }
 
-    public String addToCache(final String url, final String content) {
-        if (hasText(url) && hasText(content)) {
-            cache.put(url, content);
-            cacheTimes.put(System.currentTimeMillis(), url);
+    public String addToCache(final BaseRequest request, final String content) {
+        if (hasText(request.getUrl()) && hasText(content)) {
+            cache.put(request.getUrl(), content);
+            registerTimeoutIfNew(request);
         } else {
-            LOG.warn("Received empty page from url [" + url + "]");
+            LOG.warn("Received empty page from url [{}]", request.getUrl());
         }
         return content;
     }
 
-    public Map<String, List<ElementsResponse>> getHtmlElements(final String url, final Map<String, String> cssQueryMap) {
-        final String html = getPage(url);
+    public Map<String, List<ElementsResponse>> getHtmlElements(final ElementsRequest request) {
+        final String html = getPage(request);
         final Map<String, List<ElementsResponse>> result = new HashMap<>();
         if (hasText(html)) {
             final Document document = Jsoup.parse(html);
-            cssQueryMap.forEach((name, cssQuery) -> {
+            request.cssQueries().forEach((name, cssQuery) -> {
                 if (hasText(name) && hasText(cssQuery)) {
                     result.put(name, ElementsResponse.from(document.select(cssQuery)));
                 }
@@ -88,53 +80,89 @@ public class BrowserService implements Closeable {
         return result;
     }
 
-    public String getPage(final String url) {
-        return getCachedPage(url).orElseGet(() -> cacheNewPage(url));
+    public String getPage(final BaseRequest request) {
+        return getCachedPage(request.getUrl()).orElseGet(() -> cacheNewPage(request));
     }
 
     public CacheStatistic getStatistic() {
         return new CacheStatistic().setSize((long) cache.size());
     }
 
+    private void registerTimeoutIfNew(final BaseRequest request) {
+        final CacheItem cacheItem = new CacheItem(System.currentTimeMillis() + request.getPageCacheMS(), request.getUrl());
+        final int index = cacheTimes.indexOf(cacheItem);
+        if (index < 0) {
+            cacheTimes.add(cacheItem);
+        }
+    }
+
     private Optional<String> getCachedPage(final String url) {
         return Optional.ofNullable(cache.get(url));
     }
 
-    private synchronized String cacheNewPage(final String url) {
-        if (toUrl(url) != null) {
+    private synchronized String cacheNewPage(final BaseRequest request) {
+        if (toUrl(request.getUrl()) != null) {
             try {
                 if (atomicDriver.get() == null) {
                     start();
                 }
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(format("Page call [%s]", url));
+                    LOG.debug(format("Page call [%s]", request.getUrl()));
                 }
                 final ChromeDriver driver = this.atomicDriver.get();
-                driver.get(url);
-                return addToCache(url, driver.getPageSource());
+                driver.get(request.getUrl());
+                return addToCache(request, driver.getPageSource());
             } catch (Exception e) {
-                LOG.warn(format("Could not render [%s]", url), e);
+                LOG.warn(format("Could not render [%s]", request.getUrl()), e);
                 clearBrowserCache();
             }
         }
         return "";
     }
 
-    private void logDeletedItems(final int[] deletedItems) {
-        if ((deletedItems[0] + deletedItems[1]) != 0) {
+    private long cleanUpOverTimed() {
+        final AtomicLong deletedItems = new AtomicLong(0);
+        final long currentTimeMs = System.currentTimeMillis();
+        new ArrayList<>(cacheTimes).forEach(cacheItem -> {
+            if (cacheItem.time() < currentTimeMs) {
+                deletedItems.incrementAndGet();
+                cache.remove(cacheItem.id());
+                cacheTimes.remove(cacheItem);
+            }
+        });
+        return deletedItems.get();
+    }
+
+    private long cleanUpOverflow() {
+        final AtomicLong deletedItems = new AtomicLong(0);
+        final long deleteNumber = cache.size() - CACHE_ITEM_LIMIT;
+        if (deleteNumber > 0) {
+            final List<CacheItem> collect = cacheTimes
+                    .stream()
+                    .sorted((o1, o2) -> Long.compare(o2.time(), o1.time()))
+                    .limit(deleteNumber)
+                    .collect(toList());
+            collect
+                    .forEach(cacheItem -> {
+                        deletedItems.incrementAndGet();
+                        cache.remove(cacheItem.id());
+                    });
+            cacheTimes.removeAll(collect);
+        }
+        return deletedItems.get();
+    }
+
+    private void logDeletedItems(final long overTimed, final long overFlow) {
+        if ((overTimed + overFlow) != 0) {
             final String logMessage = format(
                     "Deleted items [%s], [%s] items CACHE_LIVE_TIME_MS [%s], [%s] items CACHE_ITEM_LIMIT [%s]",
-                    (deletedItems[0] + deletedItems[1]),
-                    deletedItems[0],
-                    CACHE_LIVE_TIME_MS,
-                    deletedItems[1],
+                    (overTimed + overFlow),
+                    overTimed,
+                    DEFAULT_PAGE_CACHE_MS,
+                    overFlow,
                     CACHE_ITEM_LIMIT
             );
-            if (deletedItems[1] > 0) {
-                LOG.warn(logMessage);
-            } else {
-                LOG.info(logMessage);
-            }
+            LOG.info(logMessage);
         }
     }
 
@@ -160,9 +188,8 @@ public class BrowserService implements Closeable {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         try {
-            Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::close);
             Optional.ofNullable(atomicDriver.get()).ifPresent(RemoteWebDriver::quit);
             WebDriverManager.chromedriver().clearResolutionCache();
         } catch (Exception e) {

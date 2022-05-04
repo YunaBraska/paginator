@@ -1,17 +1,11 @@
 package berlin.yuna.paginator.model;
 
-public class SavePageRequest {
-    private String url;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class SavePageRequest extends BaseRequest {
+
+    @JsonProperty("content")
     private String content;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public SavePageRequest setUrl(final String url) {
-        this.url = url;
-        return this;
-    }
 
     public String getContent() {
         return content;

@@ -61,12 +61,14 @@ Paginator to get html documents with JS support
 
 ### Endpoints
 
-| METHOD  | URL               | REQUEST BODY                 | RETURN BODY                    | Description                   | 
-| --------|-------------------|------------------------------|--------------------------------|-------------------------------|
-| GET/PUT | /pages            | String url                   |                                | Get html page from url        |
-| GET/PUT | /pages/elements   | url, Map\<queryId, cssQuery> | Map\<queryId, List\<Elements>> | Get specific html elements    |
-| GET/PUT | /pages/statistics |                              | size, maxLifeTime, sizeLimit   | Get cache statistics          |
-| GET/PUT | /pages            | url, content                 |                                | Manual add html page to cache |
+| METHOD  | URL               | REQUEST BODY                                                            | RETURN BODY                                | Description                   | 
+| --------|-------------------|-------------------------------------------------------------------------|--------------------------------------------|-------------------------------|
+| GET/PUT | /pages            | url, <br /> page_cache_ms* \[optional\]                                 |                                            | Get html page from url        |
+| GET/PUT | /pages/elements   | url, <br /> Map\<queryId, cssQuery>, <br /> page_cache_ms* \[optional\] | Map\<queryId, <br /> List\<Elements>>      | Get specific html elements    |
+| GET/PUT | /pages            | url, <br /> content, <br /> page_cache_ms* \[optional\]                 |                                            | Manual add html page to cache |
+| GET/PUT | /pages/statistics |                                                                         | size, <br /> maxLifeTime, <br /> sizeLimit | Get cache statistics          |
+
+\* **page_cache_ms** is **optional** - it does not overwrite the previous value at the second call.
 
 ### Examples
 
@@ -134,8 +136,7 @@ Paginator to get html documents with JS support
 
 * Async page call implementation \[remove synchronised\]
 * Endpoint to clear cache
-* configurable cache limits
-* Automate docker image build
+* configurable default cache limits
 
 ```
     ////((((((((((((((((((((((((((((((* **         

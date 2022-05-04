@@ -30,12 +30,12 @@ public class BrowserController {
 
     @RequestMapping(method = {GET, PUT}, produces = APPLICATION_JSON_VALUE)
     public String getPage(@RequestBody final GetPageRequest request) {
-        return browser.getPage(request.getUrl());
+        return browser.getPage(request);
     }
 
     @RequestMapping(method = {GET, PUT}, path = "elements", produces = APPLICATION_JSON_VALUE)
     public Map<String, List<ElementsResponse>> getElements(@RequestBody final ElementsRequest request) {
-        return browser.getHtmlElements(request.getUrl(), request.cssQueries());
+        return browser.getHtmlElements(request);
     }
 
     @RequestMapping(method = {GET, PUT}, path = "statistics", produces = APPLICATION_JSON_VALUE)
@@ -45,7 +45,7 @@ public class BrowserController {
 
     @PostMapping(produces = APPLICATION_JSON_VALUE)
     public String savePage(@RequestBody final SavePageRequest request) {
-        return browser.addToCache(request.getUrl(), request.getContent());
+        return browser.addToCache(request, request.getContent());
     }
 
 }
