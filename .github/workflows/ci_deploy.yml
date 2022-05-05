@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 8
-          server-id: ossrh
           distribution: 'adopt'
+          server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }} # Value of the GPG private key to import
