@@ -6,7 +6,7 @@
 
     <groupId>berlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.1.19</version>
+    <version>0.1.20</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
@@ -46,7 +46,7 @@
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
         <!-- TEST -->
         <junit.version>5.9.0-M1</junit.version>
-        <rest-assured.version>5.1.0</rest-assured.version>
+        <rest-assured.version>5.1.1</rest-assured.version>
         <!-- BUILD -->
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
