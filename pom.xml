@@ -6,7 +6,7 @@
 
     <groupId>berlin.yuna</groupId>
     <artifactId>paginator</artifactId>
-    <version>0.1.21</version>
+    <version>0.1.22</version>
 
     <name>paginator</name>
     <description>Small browser service [needs chrome to be installed on the machine]
@@ -43,7 +43,7 @@
         <jsoup.version>1.15.1</jsoup.version>
         <selenium.version>4.3.0</selenium.version>
         <spring-boot.version>2.7.1</spring-boot.version>
-        <webdrivermanager.version>5.2.0</webdrivermanager.version>
+        <webdrivermanager.version>5.2.1</webdrivermanager.version>
         <!-- TEST -->
         <junit.version>5.9.0-M1</junit.version>
         <rest-assured.version>5.1.1</rest-assured.version>
