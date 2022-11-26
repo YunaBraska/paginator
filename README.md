@@ -14,6 +14,7 @@ Paginator to get html documents with JS support
 [![Javadoc][javadoc_shield]][javadoc_link]
 [![Size][size_shield]][size_shield]
 ![Label][label_shield]
+![Label][spring_boot_3]
 
 [build_shield]: https://github.com/YunaBraska/paginator/workflows/JAVA_CI/badge.svg
 [build_link]: https://github.com/YunaBraska/paginator/actions?query=workflow%3AJAVA_CI
@@ -39,6 +40,7 @@ Paginator to get html documents with JS support
 [label_shield]: https://img.shields.io/badge/Yuna-QueenInside-blueviolet?style=flat-square
 [gitter_shield]: https://img.shields.io/gitter/room/YunaBraska/paginator?style=flat-square
 [gitter_link]: https://gitter.im/paginator/Lobby
+[spring_boot_3]: https://img.shields.io/badge/SpringBoot-3-blueviolet?style=flat-square
 
 ### Requirements
 
